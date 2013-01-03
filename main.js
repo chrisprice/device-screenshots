@@ -1,3 +1,3 @@
-define(["$M"], function($M, $V) {
-  console.log("BOB", $M);
+define(["sylvester"], function(sylvester) {
+  console.log("BOB", sylvester);
 });

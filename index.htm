@@ -7,13 +7,15 @@
         "sylvester": "components/sylvester/sylvester.src"
       },
       shim: {
-        "matrix": {
-          deps: "sylvester",
-          exports: "$M"
-        },
-        "vector": {
-          deps: "sylvester",
-          exports: "$V"
+        "sylvester": {
+          init: function() {
+            return {
+              Matrix: this.Matrix,
+              Vector: this.Vector,
+              M: this.Matrix.create,
+              V: this.Vector.create
+            }
+          }
         }
       }
     };

@@ -1,10 +1,10 @@
 define(['gaussian-elimination'], function(ge) {
   var actual = ge([
-    [0,-4,9,4,35],
-    [2,6,-1,3,23],
-    [3,-5,8,2,25],
-    [1,-7,2,-1,-11]
-  ], 4);
+    [0, -4, 9, 4],
+    [2, 6, -1, 3],
+    [3, -5, 8, 2],
+    [1, -7, 2, -1]
+  ], [35, 23, 25, -11]);
   var expected = [1,2,3,4];
   console.log(
       Math.abs(actual[0] - expected[0]) < 0.0001,
