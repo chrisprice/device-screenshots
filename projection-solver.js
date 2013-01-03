@@ -1,9 +1,11 @@
 define(['gaussian-elimination'], function(solve) {
 
-  var a = [[0, 0], [404, 650]];
-  var b = [[640, 0], [896, 354]];
-  var c = [[0, 1136], [1219, 1293]];
-  var d = [[640, 1136], [1721, 910]];
+  var a = [[404, 650], [0, 0]];
+  var b = [[896, 354], [640, 0]];
+  var c = [[1219, 1293], [0, 1136]];
+  var d = [[1721, 910], [640, 1136]];
+
+  // [A, B] it will produce a mapping to turn B into A
 
   // form a linear system using the 4 points and setting t33 = 1
   // taken from http://www.cs.cmu.edu/~ph/869/papers/zisser-mundy.pdf 23.4.7
@@ -21,13 +23,25 @@ define(['gaussian-elimination'], function(solve) {
 
   var result = solve(linearSystem);
 
-  var projectiveTransformMatrix = [
-    [result[0], result[1], result[2]],
-    [result[3], result[4], result[5]],
-    [result[6], result[7], 1]
-  ];
+  console.log(result);
+
+  var projectiveTransformMatrix = new WebKitCSSMatrix();
+  projectiveTransformMatrix.m11 = result[0];
+  projectiveTransformMatrix.m12 = result[3];
+
+  projectiveTransformMatrix.m14 = result[6];
+
+  projectiveTransformMatrix.m21 = result[1];
+  projectiveTransformMatrix.m22 = result[4];
+
+  projectiveTransformMatrix.m24 = result[7];
+
+  projectiveTransformMatrix.m41 = result[2]; // translate
+  projectiveTransformMatrix.m42 = result[5]; // translate
 
   console.log(projectiveTransformMatrix);
+
+  document.getElementById("screenshot").style.webkitTransform = projectiveTransformMatrix;
 });
 
 

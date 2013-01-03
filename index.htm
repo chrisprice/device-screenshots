@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <style>
+    div {
+      -webkit-transform-origin: 0 0;
+      /*-webkit-transform: scale(0.5);*/
+    }
+    img {
+      -webkit-transform-origin: 0 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
   <script>
     var require = {
       paths: {
@@ -23,7 +35,9 @@
   <script type="text/javascript" src="components/requirejs/require.js" data-main="projection-solver"></script>
 </head>
 <body>
-  <img src="8074156745_3fc93aa1cf_o.jpg"/>
-  <img id="screenshot" src="SearchResults.png"/>
+  <div>
+    <img src="8074156745_3fc93aa1cf_o.jpg"/>
+    <img id="screenshot" src="SearchResults.png"/>
+  </div>
 </body>
 </html>
