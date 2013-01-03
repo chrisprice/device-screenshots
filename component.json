@@ -1,0 +1,9 @@
+{
+  "name": "device-screenshots",
+  "version": "0.0.0",
+  "dependencies": {
+    "requirejs": "~2.1.2",
+    "sylvester": "~0.1.3",
+    "jasmine": "~1.3.1"
+  }
+}

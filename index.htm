@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+    var require = {
+      paths: {
+        "sylvester": "components/sylvester/sylvester.src"
+      },
+      shim: {
+        "matrix": {
+          deps: "sylvester",
+          exports: "$M"
+        },
+        "vector": {
+          deps: "sylvester",
+          exports: "$V"
+        }
+      }
+    };
+  </script>
+  <script type="text/javascript" src="components/requirejs/require.js" data-main="gaussian-elimination-spec"></script>
+</head>
+<body>
+  <img src="8074156745_3fc93aa1cf_o.jpg"/>
+  <img id="screenshot" src="SearchResults.png"/>
+</body>
+</html>
