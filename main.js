@@ -13,7 +13,8 @@ define(["renderer", "projection-solver", "sylvester"], function(Renderer, solveP
   var d1 = [640, 1136-1136];
   var d2 = [1721, 1848-910];
 
-  var renderer = new Renderer(document.getElementById('scene'));
+  var canvas = document.getElementById('scene');
+  var renderer = new Renderer(canvas);
 
   var background = new Image();
   background.onload = function() {
@@ -36,23 +37,42 @@ define(["renderer", "projection-solver", "sylvester"], function(Renderer, solveP
   }
   updateTransformMatrix();
 
-  document.body.addEventListener("click", function(e) {
-    var clickVector = sylvester.V([e.offsetX, 1848-e.offsetY]);
-    console.log(clickVector);
-    var minDistance = Infinity, minPoint = null;
-    [a2, b2, c2, d2].forEach(function(point) {
-      var distance = sylvester.V(point).distanceFrom(clickVector);
-      if (distance < minDistance) {
-        minDistance = distance;
-        minPoint = point;
-      }
-    });
-    if (minPoint) {
-      minPoint[0] = clickVector.elements[0];
-      minPoint[1] = clickVector.elements[1];
+  var mouseButtonDown = false, currentPoint = null;
+  function moveHandler(e) {
+    if (!mouseButtonDown) {
+      return;
     }
 
-    updateTransformMatrix();
-  });
+    var clickVector = sylvester.V([e.offsetX, 1848-e.offsetY]);
+    if (!currentPoint) {
+      var minDistance = Infinity;
+      [a2, b2, c2, d2].forEach(function(point) {
+        var distance = sylvester.V(point).distanceFrom(clickVector);
+        if (distance < minDistance) {
+          minDistance = distance;
+          currentPoint = point;
+        }
+      });
+    }
 
+    currentPoint[0] = clickVector.elements[0];
+    currentPoint[1] = clickVector.elements[1];
+
+    updateTransformMatrix();
+  }
+  document.body.addEventListener("mousedown", function(e) {
+    mouseButtonDown = true;
+    moveHandler(e);
+  });
+  document.body.addEventListener("mouseup", function(e) {
+    mouseButtonDown = false;
+    currentPoint = null;
+  });
+  document.body.addEventListener("mousemove", moveHandler);
+//
+//  canvas.addEventListener('dragstart', function(e) {
+//    var img = document.createElement("img");
+//    img.src = canvas.toDataURL();
+//    e.dataTransfer.setData('image/png', img);
+//  }, false);
 });

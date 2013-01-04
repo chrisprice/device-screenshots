@@ -68,7 +68,7 @@ define(["threejs"], function(THREE) {
       });
       var geometry = new THREE.PlaneGeometry(1, 1);
       geometry.applyMatrix(new THREE.Matrix4().translate(new THREE.Vector3(0.5, 0.5, zIndex)));
-      return new THREE.Mesh(geometry, material);;
+      return new THREE.Mesh(geometry, material);
     }
   };
 });
