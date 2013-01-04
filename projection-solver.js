@@ -1,65 +1,31 @@
-define(['sylvester','gaussian-elimination'], function(sylvester, solve) {
-
-  var a = [[404, 650], [0, 0]];
-  var b = [[896, 354], [640, 0]];
-  var c = [[1219, 1293], [0, 1136]];
-  var d = [[1721, 910], [640, 1136]];
-
-
-  function updateTransformMatrix() {
-    // [A, B] it will produce a mapping to turn B into A
-
+define(['gaussian-elimination'], function(solve) {
+  // produce the transform to turn [abcd]1 into [abcd]2
+  return function(a1, a2, b1, b2, c1, c2, d1, d2) {
     // form a linear system using the 4 points and setting t33 = 1
     // taken from http://www.cs.cmu.edu/~ph/869/papers/zisser-mundy.pdf 23.4.7
-
     var linearSystem = [
-      [a[1][0], a[1][1], 1,    0, 0, 0,                -a[0][0]*a[1][0], -a[0][0]*a[1][1],    a[0][0]],
-      [0, 0, 0,                a[1][0], a[1][1], 1,    -a[0][1]*a[1][0], -a[0][1]*a[1][1],    a[0][1]],
-      [b[1][0], b[1][1], 1,    0, 0, 0,                -b[0][0]*b[1][0], -b[0][0]*b[1][1],    b[0][0]],
-      [0, 0, 0,                b[1][0], b[1][1], 1,    -b[0][1]*b[1][0], -b[0][1]*b[1][1],    b[0][1]],
-      [c[1][0], c[1][1], 1,    0, 0, 0,                -c[0][0]*c[1][0], -c[0][0]*c[1][1],    c[0][0]],
-      [0, 0, 0,                c[1][0], c[1][1], 1,    -c[0][1]*c[1][0], -c[0][1]*c[1][1],    c[0][1]],
-      [d[1][0], d[1][1], 1,    0, 0, 0,                -d[0][0]*d[1][0], -d[0][0]*d[1][1],    d[0][0]],
-      [0, 0, 0,                d[1][0], d[1][1], 1,    -d[0][1]*d[1][0], -d[0][1]*d[1][1],    d[0][1]]
+      [a1[0], a1[1], 1, 0,     0,     0, -a2[0]*a1[0], -a2[0]*a1[1], a2[0]],
+      [0,     0,     0, a1[0], a1[1], 1, -a2[1]*a1[0], -a2[1]*a1[1], a2[1]],
+      [b1[0], b1[1], 1, 0,     0,     0, -b2[0]*b1[0], -b2[0]*b1[1], b2[0]],
+      [0,     0,     0, b1[0], b1[1], 1, -b2[1]*b1[0], -b2[1]*b1[1], b2[1]],
+      [c1[0], c1[1], 1, 0,     0,     0, -c2[0]*c1[0], -c2[0]*c1[1], c2[0]],
+      [0,     0,     0, c1[0], c1[1], 1, -c2[1]*c1[0], -c2[1]*c1[1], c2[1]],
+      [d1[0], d1[1], 1, 0,     0,     0, -d2[0]*d1[0], -d2[0]*d1[1], d2[0]],
+      [0,     0,     0, d1[0], d1[1], 1, -d2[1]*d1[0], -d2[1]*d1[1], d2[1]]
     ];
 
-    var result = solve(linearSystem);
+    // solve the system to retrieve the remaining tij values
+    var t = solve(linearSystem);
 
-    var projectiveTransformMatrix = new WebKitCSSMatrix();
-    projectiveTransformMatrix.m11 = result[0];
-    projectiveTransformMatrix.m12 = result[3];
-
-    projectiveTransformMatrix.m14 = result[6];
-
-    projectiveTransformMatrix.m21 = result[1];
-    projectiveTransformMatrix.m22 = result[4];
-
-    projectiveTransformMatrix.m24 = result[7];
-
-    projectiveTransformMatrix.m41 = result[2]; // translate
-    projectiveTransformMatrix.m42 = result[5]; // translate
-
-    document.getElementById("screenshot").style.webkitTransform = projectiveTransformMatrix;
-  }
-
-  document.body.addEventListener("click", function(e) {
-    var clickVector = sylvester.V([e.offsetX, e.offsetY]);
-    console.log(clickVector.elements);
-    var minDistance = 100, minPoint = null;
-    [a, b, c, d].forEach(function(point) {
-      var distance = sylvester.V(point[0]).distanceFrom(clickVector);
-      console.log(point[0], distance);
-      if (distance < minDistance) {
-        minDistance = distance;
-        minPoint = point;
-      }
-    });
-    if (minPoint) {
-      minPoint[0] = clickVector.elements;
-    }
-
-    updateTransformMatrix();
-  });
+    // transpose the matrix and add a 3rd dimension to make it compatible with
+    // the browser based 3d transform matrix
+    return [
+        [ t[0], t[3], 0, t[6]],
+        [ t[1], t[4], 0, t[7]],
+        [ 0,    0,    1, 0   ],
+        [ t[2], t[5], 0, 1   ]
+    ];
+  };
 });
 
 
