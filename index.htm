@@ -1,21 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <style>
-    div {
-      -webkit-transform-origin: 0 0;
-    }
-    img {
-      -webkit-transform-origin: 0 0;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-  </style>
   <script>
     var require = {
       paths: {
-        "sylvester": "components/sylvester/sylvester.src"
+        "sylvester": "components/sylvester/sylvester.src",
+        "threejs": "components/threejs/build/three"
       },
       shim: {
         "sylvester": {
@@ -27,6 +17,9 @@
               V: this.Vector.create
             }
           }
+        },
+        "threejs": {
+          exports: "THREE"
         }
       }
     };
@@ -34,9 +27,6 @@
   <script type="text/javascript" src="components/requirejs/require.js" data-main="main"></script>
 </head>
 <body>
-  <div>
-    <img src="8074156745_3fc93aa1cf_o.jpg"/>
-    <img id="screenshot" src="SearchResults.png"/>
-  </div>
+  <canvas id="scene"></canvas>
 </body>
 </html>
