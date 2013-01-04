@@ -1,11 +1,6 @@
 define(["threejs"], function(THREE) {
-  return function(canvas, t) {
-
-    this.backgroundImage = null;
-    this.screenshotImage = null;
-    this.transform = transform;
-
-    var SCALE = 0.6;
+  return function(canvas) {
+    var SCALE = 1;
 
     var scene = new THREE.Scene();
 
@@ -22,12 +17,16 @@ define(["threejs"], function(THREE) {
     scene.add(background);
 
     var transform = new THREE.Object3D();
+    // STUMBLING BLOCK  https://github.com/mrdoob/three.js/wiki/Using-Matrices-&-Object3Ds-in-THREE
     transform.matrixAutoUpdate = false;
-    transform.matrix.elements = Array.prototype.concat.apply([], t);
     scene.add(transform);
 
     var screenshot = createLayer(1);
     transform.add(screenshot);
+
+    this.backgroundImage = null;
+    this.screenshotImage = null;
+    this.transform = null;
 
     this.render = function() {
       if (background.material.map.image != this.backgroundImage) {
@@ -45,11 +44,20 @@ define(["threejs"], function(THREE) {
       }
       if (screenshot.material.map.image != this.screenshotImage) {
         screenshot.material.map.image = this.screenshotImage;
+        // STUMBLING BLOCK https://github.com/mrdoob/three.js/wiki/Using-Matrices-&-Object3Ds-in-THREE
         screenshot.material.map.needsUpdate = true;
 
         screenshot.scale.x = this.screenshotImage.width;
         screenshot.scale.y = this.screenshotImage.height;
       }
+
+      // update transform
+      if (this.transform) {
+        transform.matrix.elements = Array.prototype.concat.apply([], this.transform);
+        // STUMBLING BLOCK https://github.com/mrdoob/three.js/wiki/Using-Matrices-&-Object3Ds-in-THREE
+        transform.matrixWorldNeedsUpdate = true;
+      }
+
       renderer.render(scene, camera);
     };
 
