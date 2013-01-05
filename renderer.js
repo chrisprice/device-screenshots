@@ -10,7 +10,9 @@ define(["threejs"], function(THREE) {
 
     var renderer = new THREE.WebGLRenderer({
       canvas : canvas,
-      antialias: true
+      antialias: true,
+      // fixes blank image when dragging the canvas
+      preserveDrawingBuffer: true
     });
 
     var background = createLayer(0);

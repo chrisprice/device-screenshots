@@ -45,7 +45,7 @@ define(["renderer", "projection-solver", "sylvester"], function(Renderer, solveP
 
     var clickVector = sylvester.V([e.offsetX, 1848-e.offsetY]);
     if (!currentPoint) {
-      var minDistance = Infinity;
+      var minDistance = 100;
       [a2, b2, c2, d2].forEach(function(point) {
         var distance = sylvester.V(point).distanceFrom(clickVector);
         if (distance < minDistance) {
@@ -54,15 +54,20 @@ define(["renderer", "projection-solver", "sylvester"], function(Renderer, solveP
         }
       });
     }
-
-    currentPoint[0] = clickVector.elements[0];
-    currentPoint[1] = clickVector.elements[1];
-
-    updateTransformMatrix();
+    if (currentPoint) {
+      currentPoint[0] = clickVector.elements[0];
+      currentPoint[1] = clickVector.elements[1];
+      updateTransformMatrix();
+    }
+    return !!currentPoint;
   }
   document.body.addEventListener("mousedown", function(e) {
     mouseButtonDown = true;
-    moveHandler(e);
+    if (moveHandler(e)) {
+      e.preventDefault();
+    } else {
+      mouseButtonDown = false;
+    }
   });
   document.body.addEventListener("mouseup", function(e) {
     mouseButtonDown = false;
@@ -101,10 +106,9 @@ define(["renderer", "projection-solver", "sylvester"], function(Renderer, solveP
     };
     reader.readAsDataURL(screenshotFile);
   });
-//
-//  canvas.addEventListener('dragstart', function(e) {
-//    var img = document.createElement("img");
-//    img.src = canvas.toDataURL();
-//    e.dataTransfer.setData('image/png', img);
-//  }, false);
+
+  canvas.addEventListener('dragstart', function(e) {
+    var dataURL = canvas.toDataURL();
+    e.dataTransfer.setData('DownloadURL', 'image/png:rendered.png:' + dataURL);
+  });
 });
