@@ -87,6 +87,14 @@ define(["renderer", "projection-solver", "sylvester"], function(Renderer, solveP
       var screenshot = new Image();
       screenshot.onload = function() {
         renderer.screenshotImage = screenshot;
+        a1[0] = 0;
+        a1[1] = screenshot.height;
+        b1[0] = screenshot.width;
+        b1[1] = screenshot.height;
+        c1[0] = 0;
+        c1[1] = 0;
+        d1[0] = screenshot.width;
+        d1[1] = 0;
         updateTransformMatrix();
       };
       screenshot.src = evt.target.result
