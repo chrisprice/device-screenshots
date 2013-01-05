@@ -69,6 +69,30 @@ define(["renderer", "projection-solver", "sylvester"], function(Renderer, solveP
     currentPoint = null;
   });
   document.body.addEventListener("mousemove", moveHandler);
+
+  document.body.addEventListener("drop", function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    var imageFiles = [].slice.call(e.dataTransfer.files, 0).filter(function(file) {
+      return file.type.match(/image.*/);
+    });
+
+    var screenshotFile = imageFiles[0];
+    var reader = new FileReader();
+    reader.onerror = function(e) {
+      alert('Error code: ' + e.target.error.code);
+    };
+    reader.onload = function(evt) {
+      var screenshot = new Image();
+      screenshot.onload = function() {
+        renderer.screenshotImage = screenshot;
+        updateTransformMatrix();
+      };
+      screenshot.src = evt.target.result
+    };
+    reader.readAsDataURL(screenshotFile);
+  });
 //
 //  canvas.addEventListener('dragstart', function(e) {
 //    var img = document.createElement("img");
