@@ -73,7 +73,7 @@ define(["renderer", "projection-solver", "sylvester"], function(Renderer, solveP
     }
     return !!currentPoint;
   }
-  document.body.addEventListener("mousedown", function(e) {
+  canvas.addEventListener("mousedown", function(e) {
     mouseButtonDown = true;
     if (moveHandler(e)) {
       e.preventDefault();
@@ -81,11 +81,29 @@ define(["renderer", "projection-solver", "sylvester"], function(Renderer, solveP
       mouseButtonDown = false;
     }
   });
-  document.body.addEventListener("mouseup", function(e) {
+  canvas.addEventListener("mouseup", function(e) {
     mouseButtonDown = false;
     currentPoint = null;
   });
-  document.body.addEventListener("mousemove", moveHandler);
+  canvas.addEventListener("mousemove", moveHandler);
+  canvas.addEventListener("click", function(e) {
+    e.stopPropagation();
+  });
+
+  canvas.addEventListener('dragstart', function(e) {
+    var dataURL = canvas.toDataURL();
+    e.dataTransfer.setData('DownloadURL', 'image/png:rendered.png:' + dataURL);
+  });
+
+  document.body.addEventListener("click", function(e) {
+    var temp;
+    temp = a1, a1 = a2, a2 = temp;
+    temp = b1, b1 = b2, b2 = temp;
+    temp = c1, c1 = c2, c2 = temp;
+    temp = d1, d1 = d2, d2 = temp;
+    temp = renderer.backgroundImage, renderer.backgroundImage = renderer.screenshotImage, renderer.screenshotImage = temp;
+    updateTransformMatrix();
+  });
 
   document.body.addEventListener("drop", function(e) {
     e.stopPropagation();
@@ -104,10 +122,5 @@ define(["renderer", "projection-solver", "sylvester"], function(Renderer, solveP
       setScreenshot(evt.target.result)
     };
     reader.readAsDataURL(screenshotFile);
-  });
-
-  canvas.addEventListener('dragstart', function(e) {
-    var dataURL = canvas.toDataURL();
-    e.dataTransfer.setData('DownloadURL', 'image/png:rendered.png:' + dataURL);
   });
 });
