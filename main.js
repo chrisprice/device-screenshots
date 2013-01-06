@@ -21,7 +21,8 @@ define(["renderer", "projection-solver", "sylvester", "jquery"], function(Render
     renderer.backgroundImage = background;
     updateTransformMatrix();
   };
-  background.src = "8074156745_3fc93aa1cf_o.jpg";
+  background.crossOrigin = 'anonymous';
+  background.src = "https://lh4.googleusercontent.com/-HoXlwn5rTJA/UG_ounMe6ZI/AAAAAAAABi0/thzIWjZG1Vg/s1600/IMG_20121006_095050.jpg";
 
   function setScreenshot(src) {
     var screenshot = new Image();
