@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <style>
+      body {
+          margin: 100px;
+      }
+  </style>
   <script>
     var require = {
       paths: {
         "sylvester": "components/sylvester/sylvester.src",
-        "threejs": "components/threejs/build/three"
+        "threejs": "components/threejs/build/three",
+        "jquery": "components/jquery/jquery"
       },
       shim: {
         "sylvester": {
@@ -20,6 +26,9 @@
         },
         "threejs": {
           exports: "THREE"
+        },
+        "jquery": {
+          exports: "jQuery"
         }
       }
     };

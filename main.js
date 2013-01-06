@@ -1,4 +1,4 @@
-define(["renderer", "projection-solver", "sylvester"], function(Renderer, solveProjection, sylvester) {
+define(["renderer", "projection-solver", "sylvester", "jquery"], function(Renderer, solveProjection, sylvester, $) {
 
 
   var a1 = [0, 1];
@@ -54,8 +54,13 @@ define(["renderer", "projection-solver", "sylvester"], function(Renderer, solveP
     if (!mouseButtonDown) {
       return;
     }
+    // calculate the position in gl space
+    var canvasOffset = $(canvas).offset();
+    console.log(e.pageX, canvasOffset.left)
+    var relX = e.pageX - canvasOffset.left;
+    var relY = e.pageY - canvasOffset.top;
+    var clickVector = sylvester.V([relX, canvas.height-relY]);
 
-    var clickVector = sylvester.V([e.offsetX, canvas.height-e.offsetY]);
     if (!currentPoint) {
       var minDistance = 100;
       [a2, b2, c2, d2].forEach(function(point) {
@@ -73,54 +78,55 @@ define(["renderer", "projection-solver", "sylvester"], function(Renderer, solveP
     }
     return !!currentPoint;
   }
-  canvas.addEventListener("mousedown", function(e) {
-    mouseButtonDown = true;
-    if (moveHandler(e)) {
-      e.preventDefault();
-    } else {
+  $(document)
+    .mousedown(function(e) {
+      mouseButtonDown = true;
+      if (moveHandler(e)) {
+        e.preventDefault();
+      } else {
+        mouseButtonDown = false;
+      }
+    })
+    .mouseup(function(e) {
       mouseButtonDown = false;
-    }
-  });
-  canvas.addEventListener("mouseup", function(e) {
-    mouseButtonDown = false;
-    currentPoint = null;
-  });
-  canvas.addEventListener("mousemove", moveHandler);
-  canvas.addEventListener("click", function(e) {
-    e.stopPropagation();
-  });
+      currentPoint = null;
+    })
+    .mousemove(moveHandler)
+    .click(function(e) {
+      var temp;
+      temp = a1, a1 = a2, a2 = temp;
+      temp = b1, b1 = b2, b2 = temp;
+      temp = c1, c1 = c2, c2 = temp;
+      temp = d1, d1 = d2, d2 = temp;
+      temp = renderer.backgroundImage, renderer.backgroundImage = renderer.screenshotImage, renderer.screenshotImage = temp;
+      updateTransformMatrix();
+    })
+    .bind("drop", function(e) {
+      e.stopPropagation();
+      e.preventDefault();
 
-  canvas.addEventListener('dragstart', function(e) {
-    var dataURL = canvas.toDataURL();
-    e.dataTransfer.setData('DownloadURL', 'image/png:rendered.png:' + dataURL);
-  });
+      var imageFiles = [].slice.call(e.originalEvent.dataTransfer.files, 0).filter(function(file) {
+        return file.type.match(/image.*/);
+      });
 
-  document.body.addEventListener("click", function(e) {
-    var temp;
-    temp = a1, a1 = a2, a2 = temp;
-    temp = b1, b1 = b2, b2 = temp;
-    temp = c1, c1 = c2, c2 = temp;
-    temp = d1, d1 = d2, d2 = temp;
-    temp = renderer.backgroundImage, renderer.backgroundImage = renderer.screenshotImage, renderer.screenshotImage = temp;
-    updateTransformMatrix();
-  });
-
-  document.body.addEventListener("drop", function(e) {
-    e.stopPropagation();
-    e.preventDefault();
-
-    var imageFiles = [].slice.call(e.dataTransfer.files, 0).filter(function(file) {
-      return file.type.match(/image.*/);
+      var screenshotFile = imageFiles[0];
+      var reader = new FileReader();
+      reader.onerror = function(e) {
+        alert('Error code: ' + e.target.error.code);
+      };
+      reader.onload = function(evt) {
+        setScreenshot(evt.target.result)
+      };
+      reader.readAsDataURL(screenshotFile);
     });
 
-    var screenshotFile = imageFiles[0];
-    var reader = new FileReader();
-    reader.onerror = function(e) {
-      alert('Error code: ' + e.target.error.code);
-    };
-    reader.onload = function(evt) {
-      setScreenshot(evt.target.result)
-    };
-    reader.readAsDataURL(screenshotFile);
-  });
+
+  $(canvas)
+    .click("click", function(e) {
+      e.stopPropagation();
+    })
+    .bind('dragstart', function(e) {
+      var dataURL = canvas.toDataURL();
+      e.originalEvent.dataTransfer.setData('DownloadURL', 'image/png:rendered.png:' + dataURL);
+    });
 });
